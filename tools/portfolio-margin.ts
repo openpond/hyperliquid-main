@@ -24,16 +24,12 @@ export const profile = {
 export const schema = z.object({
   enabled: z.boolean().default(true),
   environment: z.enum(["mainnet", "testnet"]).default("testnet"),
-  user: z
-    .string()
-    .regex(/^0x[a-fA-F0-9]{40}$/, "user must be a 0x address")
-    .optional(),
 });
 
 export async function POST(req: Request): Promise<Response> {
   try {
     const body = await req.json().catch(() => ({}));
-    const { enabled, environment, user } = schema.parse(body);
+    const { enabled, environment } = schema.parse(body);
 
     const chainConfig = resolveChainConfig(environment);
     const context = await wallet({
@@ -41,13 +37,12 @@ export async function POST(req: Request): Promise<Response> {
     });
 
     const walletAddress = context.address;
-    const effectiveUser = (user ?? walletAddress) as `0x${string}`;
 
     const result = await setHyperliquidPortfolioMargin({
       wallet: context as WalletFullContext,
       environment,
       enabled,
-      user: effectiveUser,
+      user: walletAddress as `0x${string}`,
     });
 
     await store({
@@ -59,7 +54,7 @@ export async function POST(req: Request): Promise<Response> {
       metadata: {
         environment,
         enabled,
-        user: effectiveUser,
+        user: walletAddress as `0x${string}`,
         result,
       },
     });
@@ -68,7 +63,7 @@ export async function POST(req: Request): Promise<Response> {
       ok: true,
       environment,
       enabled,
-      user: effectiveUser,
+      user: walletAddress as `0x${string}`,
       result,
     });
   } catch (error) {
@@ -76,12 +71,11 @@ export async function POST(req: Request): Promise<Response> {
       error instanceof HyperliquidApiError
         ? error.message
         : error instanceof Error
-          ? error.message
-          : "Unknown error";
+        ? error.message
+        : "Unknown error";
     return new Response(JSON.stringify({ ok: false, error: message }), {
       status: 400,
       headers: { "content-type": "application/json" },
     });
   }
 }
-
