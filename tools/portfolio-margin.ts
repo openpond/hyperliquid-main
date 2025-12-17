@@ -67,31 +67,16 @@ export async function POST(req: Request): Promise<Response> {
       result,
     });
   } catch (error) {
-    const timestamp = new Date().toISOString();
+    const err = error as { message?: unknown; response?: unknown; cause?: unknown };
+    const message = typeof err?.message === "string" ? err.message : "Unknown error";
+    const exchangeResponse =
+      err?.response ?? (error instanceof HyperliquidApiError ? error.response : undefined);
 
-    if (error instanceof HyperliquidApiError) {
-      console.error(`[portfolio-margin] ${timestamp} HyperliquidApiError`, {
-        message: error.message,
-        response: error.response,
-      });
-    } else if (error instanceof Error) {
-      console.error(`[portfolio-margin] ${timestamp} Error`, {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      });
-    } else {
-      console.error(`[portfolio-margin] ${timestamp} Unknown error`, error);
-    }
-
-    const message =
-      error instanceof Error ? error.message : "Unknown error";
-
-    const details = error instanceof HyperliquidApiError ? error.response : undefined;
-
-    return new Response(JSON.stringify({ ok: false, error: message, details }), {
-      status: 400,
-      headers: { "content-type": "application/json" },
-    });
+    return Response.json(
+      exchangeResponse === undefined
+        ? { ok: false, error: message }
+        : { ok: false, error: message, exchangeResponse },
+      { status: 400 }
+    );
   }
 }
