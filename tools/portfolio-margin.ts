@@ -67,13 +67,29 @@ export async function POST(req: Request): Promise<Response> {
       result,
     });
   } catch (error) {
+    const timestamp = new Date().toISOString();
+
+    if (error instanceof HyperliquidApiError) {
+      console.error(`[portfolio-margin] ${timestamp} HyperliquidApiError`, {
+        message: error.message,
+        response: error.response,
+      });
+    } else if (error instanceof Error) {
+      console.error(`[portfolio-margin] ${timestamp} Error`, {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      });
+    } else {
+      console.error(`[portfolio-margin] ${timestamp} Unknown error`, error);
+    }
+
     const message =
-      error instanceof HyperliquidApiError
-        ? error.message
-        : error instanceof Error
-        ? error.message
-        : "Unknown error";
-    return new Response(JSON.stringify({ ok: false, error: message }), {
+      error instanceof Error ? error.message : "Unknown error";
+
+    const details = error instanceof HyperliquidApiError ? error.response : undefined;
+
+    return new Response(JSON.stringify({ ok: false, error: message, details }), {
       status: 400,
       headers: { "content-type": "application/json" },
     });
