@@ -70,12 +70,15 @@ export async function POST(req: Request): Promise<Response> {
     const err = error as { message?: unknown; response?: unknown; cause?: unknown };
     const message = typeof err?.message === "string" ? err.message : "Unknown error";
     const exchangeResponse =
-      err?.response ?? (error instanceof HyperliquidApiError ? error.response : undefined);
+      err?.response ?? (error instanceof HyperliquidApiError ? error.response : null);
 
     return Response.json(
-      exchangeResponse === undefined
-        ? { ok: false, error: message }
-        : { ok: false, error: message, exchangeResponse },
+      {
+        ok: false,
+        error: message,
+        exchangeResponse,
+        debug: "portfolio-margin@v2",
+      },
       { status: 400 }
     );
   }
