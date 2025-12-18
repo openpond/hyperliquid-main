@@ -34,6 +34,15 @@ export async function POST(req: Request): Promise<Response> {
     const chainConfig = resolveChainConfig(environment);
     const context = await wallet({
       chain: chainConfig.chain,
+      apiKey: process.env.ALCHEMY_API_KEY,
+      rpcUrl: chainConfig.rpcUrl ?? process.env.RPC_URL,
+      turnkey: {
+        organizationId: process.env.TURNKEY_SUBORG_ID!,
+        apiPublicKey: process.env.TURNKEY_API_PUBLIC_KEY!,
+        apiPrivateKey: process.env.TURNKEY_API_PRIVATE_KEY!,
+        signWith: process.env.TURNKEY_WALLET_ADDRESS!,
+        apiBaseUrl: process.env.TURNKEY_API_BASE_URL,
+      },
     });
 
     const walletAddress = context.address;
