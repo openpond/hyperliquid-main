@@ -50,6 +50,7 @@ export async function POST(req: Request): Promise<Response> {
     status: "submitted",
     walletAddress: context.address,
     action: "builder-approval",
+    network: environment === "mainnet" ? "hyperliquid" : "hyperliquid-testnet",
   });
 
   return Response.json({

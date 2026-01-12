@@ -43,6 +43,7 @@ export async function POST(req: Request): Promise<Response> {
     status: "accepted",
     walletAddress,
     action: "terms",
+    network: environment === "mainnet" ? "hyperliquid" : "hyperliquid-testnet",
     metadata: {
       environment,
       note: "Hyperliquid does not expose a terms endpoint; this records local acknowledgement only.",

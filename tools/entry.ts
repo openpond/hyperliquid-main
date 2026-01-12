@@ -208,13 +208,13 @@ export async function POST(req: Request): Promise<Response> {
 
     // Persist entry + optional TP/SL setup
     await store({
-      source: "hyperliquid-testnet",
+      source: "hyperliquid",
       ref: orderRef,
       status: "submitted",
       walletAddress: ctx.address,
       action: "order",
       notional: size,
-      network: "hyperliquid-testnet",
+      network: environment === "mainnet" ? "hyperliquid" : "hyperliquid-testnet",
       metadata: {
         symbol,
         side,

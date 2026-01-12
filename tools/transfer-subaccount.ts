@@ -62,6 +62,7 @@ export async function POST(req: Request): Promise<Response> {
     status: "submitted",
     walletAddress: ctx.address,
     action: "subaccount-transfer",
+    network: environment === "mainnet" ? "hyperliquid" : "hyperliquid-testnet",
     metadata: {
       environment,
       subAccountUser,

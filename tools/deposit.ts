@@ -59,6 +59,7 @@ export async function POST(req: Request): Promise<Response> {
     walletAddress,
     action: "deposit",
     notional: amount,
+    network: environment === "mainnet" ? "hyperliquid" : "hyperliquid-testnet",
     metadata: {
       environment,
       txHash: deposit.txHash,

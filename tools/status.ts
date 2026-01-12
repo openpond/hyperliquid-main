@@ -51,6 +51,7 @@ export async function POST(req: Request): Promise<Response> {
     status: "submitted",
     walletAddress,
     action: "status",
+    network: environment === "mainnet" ? "hyperliquid" : "hyperliquid-testnet",
     metadata: {
       environment,
       snapshots,

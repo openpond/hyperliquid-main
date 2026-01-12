@@ -72,6 +72,7 @@ export async function POST(req: Request): Promise<Response> {
     status: "cancelled",
     walletAddress: ctx.address,
     action: "order",
+    network: environment === "mainnet" ? "hyperliquid" : "hyperliquid-testnet",
     metadata: { symbol, cancelled: cloid ?? oid, environment },
   });
 
